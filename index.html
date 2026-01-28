@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Matrix Background with Responsive Video</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+		<style>
+			/* Reset + base */
+			html,
+			body {
+				margin: 0;
+				padding: 0;
+				width: 100%;
+				height: 100%;
+				background: black;
+				overflow: hidden;
+				font-family: monospace;
+			}
+
+			/* Matrix canvas */
+			canvas {
+				position: fixed;
+				inset: 0;
+				z-index: 0;
+				pointer-events: none;
+			}
+
+			/* Video layer */
+			.video-layer {
+				position: fixed;
+				inset: 0;
+				z-index: 1;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+
+			video {
+				max-width: 100%;
+				max-height: 100%;
+				width: auto;
+				height: auto;
+				object-fit: contain;
+			}
+
+			/* Landscape: prioritize width */
+			@media (orientation: landscape) {
+				video {
+					width: 100%;
+					height: auto;
+				}
+			}
+
+			/* Portrait: prioritize height */
+			@media (orientation: portrait) {
+				video {
+					height: 100%;
+					width: auto;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<canvas id="matrix"></canvas>
+
+		<div class="video-layer">
+			<video src="output.webm" autoplay muted loop playsinline></video>
+		</div>
+
+		<script>
+			const canvas = document.getElementById("matrix");
+			const ctx = canvas.getContext("2d");
+
+			const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(
+				navigator.userAgent,
+			);
+
+			const fontSize = isMobile ? 12 : 15;
+			const speed = isMobile ? 0.6 : 1.2;
+			const fadeAlpha = isMobile ? 0.18 : 0.1;
+			const glow = isMobile ? 0 : 12;
+			const frameInterval = isMobile ? 70 : 40;
+			const columnSpacing = isMobile ? 1.35 : 1.15;
+
+			const chars =
+				"アイウエオカキクケコサシスセソタチツテトナニヌネノ0123456789";
+
+			let columns = 0;
+			let drops = [];
+			let lastTime = 0;
+
+			function resizeCanvas() {
+				const dpr = window.devicePixelRatio || 1;
+
+				canvas.width = window.innerWidth * dpr;
+				canvas.height = window.innerHeight * dpr;
+
+				canvas.style.width = "100%";
+				canvas.style.height = "100%";
+
+				ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+				columns = Math.floor(window.innerWidth / fontSize);
+				drops = Array.from(
+					{ length: columns },
+					() => Math.random() * window.innerHeight,
+				);
+			}
+
+			resizeCanvas();
+			window.addEventListener("resize", () => {
+				clearTimeout(window.__resizeTimer);
+				window.__resizeTimer = setTimeout(resizeCanvas, 200);
+			});
+
+			function draw(timestamp) {
+				if (timestamp - lastTime < frameInterval) {
+					requestAnimationFrame(draw);
+					return;
+				}
+				lastTime = timestamp;
+
+				ctx.fillStyle = `rgba(0, 0, 0, ${fadeAlpha})`;
+				ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+				ctx.font = `${fontSize}px monospace`;
+				ctx.textBaseline = "top";
+
+				for (let i = 0; i < drops.length; i++) {
+					const x = i * fontSize * columnSpacing;
+					const y = drops[i];
+					const char = chars[Math.floor(Math.random() * chars.length)];
+
+					ctx.shadowColor = "#00ff88";
+					ctx.shadowBlur = glow;
+					ctx.fillStyle = "#ccffcc";
+					ctx.fillText(char, x, y);
+
+					ctx.shadowBlur = 0;
+					ctx.fillStyle = "#00aa55";
+					ctx.fillText(char, x, y - fontSize);
+
+					if (y > window.innerHeight && Math.random() > 0.975) {
+						drops[i] = 0;
+					} else {
+						drops[i] += fontSize * speed;
+					}
+				}
+
+				requestAnimationFrame(draw);
+			}
+
+			requestAnimationFrame(draw);
+		</script>
+	</body>
+</html>
