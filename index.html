@@ -1,157 +1,62 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<title>Matrix Background with Responsive Video</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-		<style>
-			/* Reset + base */
-			html,
-			body {
-				margin: 0;
-				padding: 0;
-				width: 100%;
-				height: 100%;
-				background: black;
-				overflow: hidden;
-				font-family: monospace;
-			}
-
-			/* Matrix canvas */
-			canvas {
-				position: fixed;
-				inset: 0;
-				z-index: 0;
-				pointer-events: none;
-			}
-
-			/* Video layer */
-			.video-layer {
-				position: fixed;
-				inset: 0;
-				z-index: 1;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-			}
-
-			video {
-				max-width: 100%;
-				max-height: 100%;
-				width: auto;
-				height: auto;
-				object-fit: contain;
-			}
-
-			/* Landscape: prioritize width */
-			@media (orientation: landscape) {
-				video {
-					width: 100%;
-					height: auto;
-				}
-			}
-
-			/* Portrait: prioritize height */
-			@media (orientation: portrait) {
-				video {
-					height: 100%;
-					width: auto;
-				}
-			}
-		</style>
-	</head>
-	<body>
-		<canvas id="matrix"></canvas>
-
-		<div class="video-layer">
-			<video src="output.webm" autoplay muted loop playsinline></video>
-		</div>
-
-		<script>
-			const canvas = document.getElementById("matrix");
-			const ctx = canvas.getContext("2d");
-
-			const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(
-				navigator.userAgent,
-			);
-
-			const fontSize = isMobile ? 12 : 15;
-			const speed = isMobile ? 0.6 : 1.2;
-			const fadeAlpha = isMobile ? 0.18 : 0.1;
-			const glow = isMobile ? 0 : 12;
-			const frameInterval = isMobile ? 70 : 40;
-			const columnSpacing = isMobile ? 1.35 : 1.15;
-
-			const chars =
-				"アイウエオカキクケコサシスセソタチツテトナニヌネノ0123456789";
-
-			let columns = 0;
-			let drops = [];
-			let lastTime = 0;
-
-			function resizeCanvas() {
-				const dpr = window.devicePixelRatio || 1;
-
-				canvas.width = window.innerWidth * dpr;
-				canvas.height = window.innerHeight * dpr;
-
-				canvas.style.width = "100%";
-				canvas.style.height = "100%";
-
-				ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-				columns = Math.floor(window.innerWidth / fontSize);
-				drops = Array.from(
-					{ length: columns },
-					() => Math.random() * window.innerHeight,
-				);
-			}
-
-			resizeCanvas();
-			window.addEventListener("resize", () => {
-				clearTimeout(window.__resizeTimer);
-				window.__resizeTimer = setTimeout(resizeCanvas, 200);
-			});
-
-			function draw(timestamp) {
-				if (timestamp - lastTime < frameInterval) {
-					requestAnimationFrame(draw);
-					return;
-				}
-				lastTime = timestamp;
-
-				ctx.fillStyle = `rgba(0, 0, 0, ${fadeAlpha})`;
-				ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-				ctx.font = `${fontSize}px monospace`;
-				ctx.textBaseline = "top";
-
-				for (let i = 0; i < drops.length; i++) {
-					const x = i * fontSize * columnSpacing;
-					const y = drops[i];
-					const char = chars[Math.floor(Math.random() * chars.length)];
-
-					ctx.shadowColor = "#00ff88";
-					ctx.shadowBlur = glow;
-					ctx.fillStyle = "#ccffcc";
-					ctx.fillText(char, x, y);
-
-					ctx.shadowBlur = 0;
-					ctx.fillStyle = "#00aa55";
-					ctx.fillText(char, x, y - fontSize);
-
-					if (y > window.innerHeight && Math.random() > 0.975) {
-						drops[i] = 0;
-					} else {
-						drops[i] += fontSize * speed;
-					}
-				}
-
-				requestAnimationFrame(draw);
-			}
-
-			requestAnimationFrame(draw);
-		</script>
-	</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
+    
+    <!-- Primary Meta Tags -->
+    <title>GenFest</title>
+    <meta name="title" content="GenFest - Welcome" />
+    <meta name="description" content="Welcome to GenFest - The Ultimate Experience" />
+    <meta name="author" content="GenFest" />
+    
+    <!-- Theme & Display -->
+    <meta name="theme-color" content="#00ff88" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="GenFest" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no" />
+    
+    <!-- Open Graph / Social -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="GenFest" />
+    <meta property="og:description" content="Welcome to GenFest - The Ultimate Experience" />
+    <meta property="og:site_name" content="GenFest" />
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="GenFest" />
+    <meta name="twitter:description" content="Welcome to GenFest - The Ultimate Experience" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/favicon.ico" />
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/output.webm" as="video" type="video/webm" />
+    
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        background: #000;
+        overflow: hidden;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>

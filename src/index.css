@@ -1,0 +1,231 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Matrix Cyberpunk Theme */
+    --background: 0 0% 0%;
+    --foreground: 120 100% 80%;
+
+    --card: 120 20% 5%;
+    --card-foreground: 120 100% 80%;
+
+    --popover: 0 0% 2%;
+    --popover-foreground: 120 100% 80%;
+
+    /* Primary: Phosphor Green */
+    --primary: 150 100% 50%;
+    --primary-foreground: 0 0% 0%;
+
+    /* Secondary: Dark Matrix Green */
+    --secondary: 150 100% 33%;
+    --secondary-foreground: 120 100% 90%;
+
+    --muted: 120 10% 10%;
+    --muted-foreground: 120 30% 50%;
+
+    /* Accent: Cyan glow */
+    --accent: 180 100% 50%;
+    --accent-foreground: 0 0% 0%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 120 50% 15%;
+    --input: 120 30% 10%;
+    --ring: 150 100% 50%;
+
+    --radius: 0.5rem;
+
+    /* Custom Matrix Colors */
+    --matrix-glow: 150 100% 53%;
+    --matrix-bright: 120 100% 90%;
+    --matrix-medium: 150 100% 33%;
+    --matrix-dark: 150 100% 20%;
+    --matrix-shadow: 150 100% 10%;
+    
+    /* Scanline effect */
+    --scanline-opacity: 0.03;
+    
+    /* Glow intensities */
+    --glow-sm: 0 0 10px hsl(150 100% 50% / 0.5);
+    --glow-md: 0 0 20px hsl(150 100% 50% / 0.6), 0 0 40px hsl(150 100% 50% / 0.3);
+    --glow-lg: 0 0 30px hsl(150 100% 50% / 0.8), 0 0 60px hsl(150 100% 50% / 0.4), 0 0 100px hsl(150 100% 50% / 0.2);
+  }
+
+  .dark {
+    --background: 0 0% 0%;
+    --foreground: 120 100% 80%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html, body, #root {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: hsl(var(--background));
+    font-family: 'Courier New', monospace;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  /* Selection styling */
+  ::selection {
+    background: hsl(var(--primary) / 0.3);
+    color: hsl(var(--primary));
+  }
+}
+
+@layer components {
+  /* Scanline overlay effect */
+  .scanlines {
+    pointer-events: none;
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      hsl(0 0% 0% / var(--scanline-opacity)) 2px,
+      hsl(0 0% 0% / var(--scanline-opacity)) 4px
+    );
+  }
+
+  /* CRT vignette effect */
+  .vignette {
+    pointer-events: none;
+    position: fixed;
+    inset: 0;
+    z-index: 99;
+    background: radial-gradient(
+      ellipse at center,
+      transparent 0%,
+      transparent 50%,
+      hsl(0 0% 0% / 0.3) 80%,
+      hsl(0 0% 0% / 0.8) 100%
+    );
+  }
+
+  /* Glitch text effect */
+  .glitch {
+    position: relative;
+    animation: glitch 2s infinite;
+  }
+
+  .glitch::before,
+  .glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .glitch::before {
+    animation: glitch-1 0.3s infinite linear alternate-reverse;
+    clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
+    color: hsl(var(--accent));
+  }
+
+  .glitch::after {
+    animation: glitch-2 0.3s infinite linear alternate-reverse;
+    clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
+    color: hsl(var(--destructive));
+  }
+
+  /* Glow text */
+  .text-glow {
+    text-shadow: var(--glow-md);
+  }
+
+  .text-glow-intense {
+    text-shadow: var(--glow-lg);
+  }
+
+  /* Pulse glow animation */
+  .pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+}
+
+@layer utilities {
+  /* Matrix fade in */
+  .animate-matrix-fade {
+    animation: matrix-fade 0.5s ease-out forwards;
+  }
+
+  /* Flicker effect */
+  .animate-flicker {
+    animation: flicker 0.15s infinite;
+  }
+
+  /* Float animation for particles */
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+}
+
+/* Keyframes */
+@keyframes glitch {
+  0%, 100% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+}
+
+@keyframes glitch-1 {
+  0% { transform: translateX(-2px); }
+  100% { transform: translateX(2px); }
+}
+
+@keyframes glitch-2 {
+  0% { transform: translateX(2px); }
+  100% { transform: translateX(-2px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.8;
+    filter: brightness(1.2);
+  }
+}
+
+@keyframes matrix-fade {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.95; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  25% { transform: translateY(-10px) translateX(5px); }
+  50% { transform: translateY(-5px) translateX(-5px); }
+  75% { transform: translateY(-15px) translateX(3px); }
+}
